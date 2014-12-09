@@ -32,24 +32,26 @@ public class FN {
         }
 
         synchronized (cache) {
-            try {
-                final Object target = clazz.newInstance();
-                final MethodAccess methodAccess = MethodAccess.get(clazz);
-                final int methodIndex = methodAccess.getIndex(methodName);
-                f = new Function() {
-                    @Override
-                    public Object apply(Object... args) {
-                        return methodAccess.invoke(target, methodIndex, args);
-                    }
-                };
+            f = cache.get(cacheKey);
+            if (f == null) {
+                try {
+                    final Object target = clazz.newInstance();
+                    final MethodAccess methodAccess = MethodAccess.get(clazz);
+                    final int methodIndex = methodAccess.getIndex(methodName);
+                    f = new Function() {
+                        @Override
+                        public Object apply(Object... args) {
+                            return methodAccess.invoke(target, methodIndex, args);
+                        }
+                    };
 
-                cache.put(cacheKey, f);
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                    cache.put(cacheKey, f);
+                } catch (InstantiationException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
             }
-
             return f;
         }
     }
