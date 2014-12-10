@@ -1,5 +1,5 @@
 package com.github.kylefeng.function;
 
-public interface Function {
+public interface Fn {
     public Object apply(Object... args);
 }
